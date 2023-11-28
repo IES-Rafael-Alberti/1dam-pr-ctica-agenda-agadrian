@@ -1,4 +1,6 @@
 """
+# USAR LISTAS EN CONTACTOS.CSV
+
 27/11/2023
 
 Práctica del examen para realizar en casa
@@ -47,7 +49,7 @@ def cargar_contactos(contactos: list):
 
     with open(RUTA_FICHERO, 'r') as fichero:
         for linea in fichero:
-            print(linea)
+            print(linea) # AAG: ACER ALGO CON ESTA LINEA (QUITAR PRINT)
 
 
 def eliminar_contacto(contactos: list, email: str):
@@ -112,6 +114,7 @@ def main():
     # - De igual manera, aunque existan espacios entre el prefijo y los 9 números al introducirlo, debe almacenarse sin espacios.
     # - Por ejemplo, será posible introducir el número +34 600 100 100, pero guardará +34600100100 y cuando se muestren los contactos, el telófono se mostrará como +34-600100100. 
     #TODO: Realizar una llamada a la función agregar_contacto con todo lo necesario para que funcione correctamente.
+    ## aag: te debe prenguntar...
     agregar_contacto(?)
 
     pulse_tecla_para_continuar()
