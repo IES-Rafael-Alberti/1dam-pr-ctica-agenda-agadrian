@@ -28,7 +28,7 @@ NOMBRE_FICHERO = 'contactos.csv'
 RUTA_FICHERO = path.join(RUTA, NOMBRE_FICHERO)
 
 #TODO: Crear un conjunto con las posibles opciones del menú de la agenda
-OPCIONES_MENU = {1, 2, 3, 4, 5, 6}
+OPCIONES_MENU = {1, 2, 3, 4, 5, 6, 7, 8}
 #TODO: Utiliza este conjunto en las funciones agenda() y pedir_opcion()
 
 
@@ -43,7 +43,6 @@ def borrar_consola():
 
 def cargar_contactos(contactos: list):
     """ Carga los contactos iniciales de la agenda desde un fichero y los añade a una lista
-
     Args:
         contactos: lista previamente inicializada
     """
@@ -81,17 +80,28 @@ def agenda(contactos: list):
     """
     #TODO: Crear un bucle para mostrar el menú y ejecutar las funciones necesarias según la opción seleccionada...
 
-    while opcion != 7:
+    while opcion != 8:
         mostrar_menu()
         opcion = pedir_opcion()
 
-        #TODO: Se valorará que utilices la diferencia simétrica de conjuntos para comprobar que la opción es un número entero del 1 al 6
-        #if opcion in ?:
+        #TODO: Se valorará que utilices la diferencia simétrica de conjuntos para comprobar que la opción es un número entero del 1 al 7
+
+        #if opcion in ?: #diferencia simertica despues del in
 
 
 def formatearTelefono(telefono:str):
+    """
+    Comrpueba si el telefono tiene prefijo y le añade un guion para separar el prefijo y el numero
+
+    Args:
+        telefono: str del telefono a comrobar
+    
+    Retorna: 
+        el telefono: formateado si tiene prefijo, o el mismo que se pasa por parametro
+    """
     if len(telefono) > 9:
         telefono = telefono[:-9] + "-" + telefono[-9:]
+
     return telefono
 
 
@@ -126,9 +136,21 @@ def mostrar_contactos(contactos: list):
 
         print(f"Nombre: {nombre} {apellido} ({email})\nTeléfonos: {msgTelefonos}")
         print("......")
+
+
+def agregar_contacto():
+    """
+    # - El nombre y apellido no pueden ser una cadena vacía o solo espacios y se guardarán con la primera letra mayúscula y el resto minúsculas (ojo a los nombre compuestos)
+    # - El email debe ser único en la lista de contactos, no puede ser una cadena vacía y debe contener el carácter @.
+    # - El email se guardará tal cuál el usuario lo introduzca, con las mayúsculas y minúsculas que escriba. 
+    #  (CORREO@gmail.com se considera el mismo email que correo@gmail.com)
+    # - Pedir teléfonos hasta que el usuario introduzca una cadena vacía, es decir, que pulse la tecla <ENTER> sin introducir nada.
+    # - Un teléfono debe estar compuesto solo por 9 números, aunque debe permitirse que se introduzcan espacios entre los números.
+    # - Además, un número de teléfono puede incluir de manera opcional un prefijo +34.
+    # - De igual manera, aunque existan espacios entre el prefijo y los 9 números al introducirlo, debe almacenarse sin espacios.
+    # - Por ejemplo, será posible introducir el número +34 600 100 100, pero guardará +34600100100 y cuando se muestren los contactos, el telófono se mostrará como +34-600100100. 
+    """
         
-
-
 
 
 def pulse_tecla_para_continuar():
@@ -143,7 +165,7 @@ def main():
     """
     #borrar_consola()
 
-    #TODO: Asignar una estructura de datos vacía para trabajar con la agenda
+    #TODO --: Asignar una estructura de datos vacía para trabajar con la agenda
 
     contactos = []
 
