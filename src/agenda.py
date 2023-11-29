@@ -28,7 +28,7 @@ NOMBRE_FICHERO = 'contactos.csv'
 RUTA_FICHERO = path.join(RUTA, NOMBRE_FICHERO)
 
 #TODO: Crear un conjunto con las posibles opciones del menú de la agenda
-OPCIONES_MENU = ?
+OPCIONES_MENU = {1, 2, 3, 4, 5, 6}
 #TODO: Utiliza este conjunto en las funciones agenda() y pedir_opcion()
 
 
@@ -42,14 +42,20 @@ def borrar_consola():
 
 
 def cargar_contactos(contactos: list):
-    """ Carga los contactos iniciales de la agenda desde un fichero
-    ...
+    """ Carga los contactos iniciales de la agenda desde un fichero y los añade a una lista
+
+    Args:
+        contactos: lista previamente inicializada
     """
     #TODO: Controlar los posibles problemas derivados del uso de ficheros...
 
     with open(RUTA_FICHERO, 'r') as fichero:
         for linea in fichero:
-            print(linea) # AAG: ACER ALGO CON ESTA LINEA (QUITAR PRINT)
+            datos = linea.split(";")
+            # Quitamos el /n del ultimo dato
+            datos[-1] = datos[-1][:-1]  
+            contactos.append(dict([ ("nombre", datos[0]), ("apellido", datos[1]), ("email", datos[2]), ("telefonos", datos[3:]) ]))
+
 
 
 def eliminar_contacto(contactos: list, email: str):
@@ -80,7 +86,48 @@ def agenda(contactos: list):
         opcion = pedir_opcion()
 
         #TODO: Se valorará que utilices la diferencia simétrica de conjuntos para comprobar que la opción es un número entero del 1 al 6
-        if opcion in ?:
+        #if opcion in ?:
+
+
+def formatearTelefono(telefono:str):
+    if len(telefono) > 9:
+        telefono = telefono[:-9] + "-" + telefono[-9:]
+    return telefono
+
+
+def mostrar_contactos(contactos: list):
+    """
+    Muestra de forma visual la lista de contactos ordenados por nombre y su informacion
+
+    Args:
+        contactos: lista de contactos
+    """
+    contactosOrdenados = contactos.copy()
+    contactosOrdenados.sort(key=lambda nom: nom["nombre"])
+
+    print(f"AGENDA ({len(contactos)})\n------")
+    for contacto in contactosOrdenados:
+        nombre = contacto["nombre"]
+        apellido = contacto["apellido"]
+        email = contacto["email"]
+        telefonos = contacto["telefonos"]
+        # Comprobamos si tiene telefono, si no tiene le damos el valor "ninguno"
+        if not telefonos:
+            msgTelefonos = "Ninguno"
+
+        #Si tiene, formateamos el telefono en caso necesario, y comprobamos si tiene 1 o mas
+        else:
+            telefonosFormateados = list(formatearTelefono(telefono) for telefono in telefonos)
+
+            if len(telefonosFormateados) > 1:
+                msgTelefonos =  " / ".join(map(str, telefonosFormateados))
+            else:
+                msgTelefonos = telefonosFormateados[0]
+
+        print(f"Nombre: {nombre} {apellido} ({email})\nTeléfonos: {msgTelefonos}")
+        print("......")
+        
+
 
 
 
@@ -94,14 +141,18 @@ def pulse_tecla_para_continuar():
 def main():
     """ Función principal del programa
     """
-    borrar_consola()
+    #borrar_consola()
 
     #TODO: Asignar una estructura de datos vacía para trabajar con la agenda
-    contactos = ?
 
-    #TODO: Modificar la función cargar_contactos para que almacene todos los contactos del fichero en una lista con un diccionario por contacto (claves: nombre, apellido, email y telefonos)
-    #TODO: Realizar una llamada a la función cargar_contacto con todo lo necesario para que funcione correctamente.
-    cargar_contactos(?)
+    contactos = []
+
+    #TODO --: Modificar la función cargar_contactos para que almacene todos los contactos del fichero en una lista con un diccionario por contacto (claves: nombre, apellido, email y telefonos)
+    #TODO --: Realizar una llamada a la función cargar_contacto con todo lo necesario para que funcione correctamente.
+
+    cargar_contactos(contactos)
+    # print(contactos)
+    mostrar_contactos(contactos)
 
     #TODO: Crear función para agregar un contacto. Debes tener en cuenta lo siguiente:
     # - El nombre y apellido no pueden ser una cadena vacía o solo espacios y se guardarán con la primera letra mayúscula y el resto minúsculas (ojo a los nombre compuestos)
@@ -115,16 +166,17 @@ def main():
     # - Por ejemplo, será posible introducir el número +34 600 100 100, pero guardará +34600100100 y cuando se muestren los contactos, el telófono se mostrará como +34-600100100. 
     #TODO: Realizar una llamada a la función agregar_contacto con todo lo necesario para que funcione correctamente.
     ## aag: te debe prenguntar...
-    agregar_contacto(?)
 
-    pulse_tecla_para_continuar()
-    borrar_consola()
+    #agregar_contacto(?)
+
+    #pulse_tecla_para_continuar()
+    #borrar_consola()
 
     #TODO: Realizar una llamada a la función eliminar_contacto con todo lo necesario para que funcione correctamente, eliminando el contacto con el email rciruelo@gmail.com
-    eliminar_contacto(?)
+    #eliminar_contacto(?)
 
-    pulse_tecla_para_continuar()
-    borrar_consola()
+    #pulse_tecla_para_continuar()
+    #borrar_consola()
 
     #TODO: Crear función mostrar_contactos para que muestre todos los contactos de la agenda con el siguiente formato:
     # ** IMPORTANTE: debe mostrarlos ordenados según el nombre, pero no modificar la lista de contactos de la agenda original **
@@ -143,10 +195,11 @@ def main():
     # ** resto de contactos **
     #
     #TODO: Realizar una llamada a la función mostrar_contactos con todo lo necesario para que funcione correctamente.
-    mostrar_contactos(?)
 
-    pulse_tecla_para_continuar()
-    borrar_consola()
+    #mostrar_contactos(?)
+
+    #pulse_tecla_para_continuar()
+    #borrar_consola()
 
     #TODO: Crear un menú para gestionar la agenda con las funciones previamente desarrolladas y las nuevas que necesitéis:
     # AGENDA
@@ -164,7 +217,8 @@ def main():
     #
     #TODO: Para la opción 3, modificar un contacto, deberás desarrollar las funciones necesarias para actualizar la información de un contacto.
     #TODO: También deberás desarrollar la opción 6 que deberá preguntar por el criterio de búsqueda (nombre, apellido, email o telefono) y el valor a buscar para mostrar los contactos que encuentre en la agenda.
-    agenda(?)
+
+    #agenda(?)
 
 
 if __name__ == "__main__":
