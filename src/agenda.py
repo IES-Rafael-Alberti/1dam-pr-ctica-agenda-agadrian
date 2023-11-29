@@ -1,5 +1,6 @@
 """
-# USAR LISTAS EN CONTACTOS.CSV
+## PREGUNTAR: tengo que hacer funciones de todo lo que en las pruebas unitarias sean funcoiones disintias? ej: pedir_mail y validar_mail. en agregar contactos yo hice todo dentro en vez de pedir cada cosa en otra fucnion.
+# 
 
 27/11/2023
 
@@ -19,6 +20,7 @@ Práctica del examen para realizar en casa
 import os
 import pathlib
 from os import path
+import copy
 
 # Constantes globales
 RUTA = pathlib.Path(__file__).parent.absolute() 
@@ -112,7 +114,7 @@ def mostrar_contactos(contactos: list):
     Args:
         contactos: lista de contactos
     """
-    contactosOrdenados = contactos.copy()
+    contactosOrdenados = copy.deepcopy(contactos)
     contactosOrdenados.sort(key=lambda nom: nom["nombre"])
 
     print(f"AGENDA ({len(contactos)})\n------")
@@ -127,18 +129,103 @@ def mostrar_contactos(contactos: list):
 
         #Si tiene, formateamos el telefono en caso necesario, y comprobamos si tiene 1 o mas
         else:
-            telefonosFormateados = list(formatearTelefono(telefono) for telefono in telefonos)
-
-            if len(telefonosFormateados) > 1:
-                msgTelefonos =  " / ".join(map(str, telefonosFormateados))
+            contacto["telefonos"] = list(formatearTelefono(telefono) for telefono in telefonos) 
+            
+            if len(telefonos) > 1:
+                msgTelefonos =  " / ".join(map(str, contacto["telefonos"]))
             else:
-                msgTelefonos = telefonosFormateados[0]
+                msgTelefonos = contacto["telefonos"][0]
 
         print(f"Nombre: {nombre} {apellido} ({email})\nTeléfonos: {msgTelefonos}")
         print("......")
+        #print(contactosOrdenados)
+        print()
+    print(contactos)
 
 
-def agregar_contacto():
+def pedir_nombre():
+    nombre_ok = False
+    while not nombre_ok:
+        try:
+            nombre = input("Nombre: ").title()
+            validar_nombre(nombre)
+            return nombre
+        except ValueError as e:
+            print("Error " + str(e))
+
+
+def validar_nombre(nombre):
+    if nombre.strip() == '':
+        raise ValueError("Nombre incorrecto")
+    return True
+
+
+
+def pedir_apellido():
+    apelllido_ok = False
+    while not apelllido_ok:
+        try:
+            apellido = input("Apellido: ").title()
+            validar_apellido(apellido)
+            return apellido
+        except ValueError as e:
+            print("Error " + str(e))
+
+
+def validar_apellido(apellido):
+    if apellido.strip() == '':
+        raise ValueError("Apellido incorrecto")
+    return True
+
+
+
+def pedir_email(contactos):
+    email_ok = False
+    while not email_ok:
+        try:
+            email = input("Email: ").strip()
+            validar_email(email, contactos)
+            return email
+        except ValueError as e:
+            print("Error: " + str(e))
+
+
+def validar_email(email, contactos):
+    if email.lower() in (correo["email"].lower() for correo in contactos):
+        raise ValueError("el email ya existe en la agenda")
+    
+    if email.strip() == '':
+        raise ValueError("el email no puede ser una cadena vacía")
+    
+    if "@" not in email:
+        raise ValueError("el email no es un correo válido")
+    
+    return True
+
+
+def pedir_telefonos():
+    telefono_ok = False
+    telefonos = []
+    while not telefono_ok:
+        try:
+            telefono = input("Introduce telefonos (enter vacio para parar): ").strip()
+
+            if telefono == '':
+                telefono_ok = True
+                return telefonos
+            
+            validar_telefonos(telefono)
+            telefonos.append(telefono)
+        except ValueError as e:
+            print("Error: " + str(e))
+
+def validar_telefonos(telefono):
+    
+
+
+
+
+def agregar_contacto(contactos:list):
     """
     # - El nombre y apellido no pueden ser una cadena vacía o solo espacios y se guardarán con la primera letra mayúscula y el resto minúsculas (ojo a los nombre compuestos)
     # - El email debe ser único en la lista de contactos, no puede ser una cadena vacía y debe contener el carácter @.
@@ -150,7 +237,14 @@ def agregar_contacto():
     # - De igual manera, aunque existan espacios entre el prefijo y los 9 números al introducirlo, debe almacenarse sin espacios.
     # - Por ejemplo, será posible introducir el número +34 600 100 100, pero guardará +34600100100 y cuando se muestren los contactos, el telófono se mostrará como +34-600100100. 
     """
-        
+
+    print("Datos a introducir\n-----------------")
+
+    nombre = pedir_nombre()
+    apellido = pedir_apellido()
+    email = pedir_email(contactos)
+
+
 
 
 def pulse_tecla_para_continuar():
@@ -173,8 +267,8 @@ def main():
     #TODO --: Realizar una llamada a la función cargar_contacto con todo lo necesario para que funcione correctamente.
 
     cargar_contactos(contactos)
-    # print(contactos)
-    mostrar_contactos(contactos)
+    
+    
 
     #TODO: Crear función para agregar un contacto. Debes tener en cuenta lo siguiente:
     # - El nombre y apellido no pueden ser una cadena vacía o solo espacios y se guardarán con la primera letra mayúscula y el resto minúsculas (ojo a los nombre compuestos)
@@ -189,7 +283,7 @@ def main():
     #TODO: Realizar una llamada a la función agregar_contacto con todo lo necesario para que funcione correctamente.
     ## aag: te debe prenguntar...
 
-    #agregar_contacto(?)
+    agregar_contacto(contactos)
 
     #pulse_tecla_para_continuar()
     #borrar_consola()
@@ -200,7 +294,7 @@ def main():
     #pulse_tecla_para_continuar()
     #borrar_consola()
 
-    #TODO: Crear función mostrar_contactos para que muestre todos los contactos de la agenda con el siguiente formato:
+    #TODO --: Crear función mostrar_contactos para que muestre todos los contactos de la agenda con el siguiente formato:
     # ** IMPORTANTE: debe mostrarlos ordenados según el nombre, pero no modificar la lista de contactos de la agenda original **
     #
     # AGENDA (6)
@@ -218,7 +312,7 @@ def main():
     #
     #TODO: Realizar una llamada a la función mostrar_contactos con todo lo necesario para que funcione correctamente.
 
-    #mostrar_contactos(?)
+    mostrar_contactos(contactos)
 
     #pulse_tecla_para_continuar()
     #borrar_consola()
