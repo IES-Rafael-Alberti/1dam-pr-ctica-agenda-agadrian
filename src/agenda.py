@@ -137,11 +137,14 @@ def mostrar_contactos(contactos: list):
                 msgTelefonos = contacto["telefonos"][0]
 
         print(f"Nombre: {nombre} {apellido} ({email})\nTeléfonos: {msgTelefonos}")
-        print("......")
+        """print("......")
         #print(contactosOrdenados)
         print()
-    print(contactos)
+    print(contactos)"""
 
+
+
+# TODO: controlar la introduccion de espacios en medio de un nombre compuesot, o del mail o apellido. Usar quizas el .split() y luego unir de nuevo las palabras de la lista creada por split
 
 def pedir_nombre():
     nombre_ok = False
@@ -205,21 +208,35 @@ def validar_email(email, contactos):
 
 def pedir_telefonos():
     telefono_ok = False
-    telefonos = []
+    lista_telefonos = []
     while not telefono_ok:
         try:
-            telefono = input("Introduce telefonos (enter vacio para parar): ").strip()
+            telefono = input("Introduce telefonos (enter vacio para parar): ").strip().replace(" ", "")
 
             if telefono == '':
                 telefono_ok = True
-                return telefonos
+                return lista_telefonos
             
-            validar_telefonos(telefono)
-            telefonos.append(telefono)
+            if validar_telefonos(telefono):
+                lista_telefonos.append(telefono)
         except ValueError as e:
             print("Error: " + str(e))
 
 def validar_telefonos(telefono):
+    """
+    
+    """
+    if (len(telefono) == 9 and not telefono.isdigit()) or telefono[]not telefono.replace("+", "").isdigit():
+        raise ValueError("Debes introducir caracteres numericos")
+    
+    if len(telefono) > 9:
+        if telefono[-12:-9] == "+34":
+            return True
+        else:
+            raise ValueError("Numero debe contener 9 digitos y opcionalmente un prefijo +34")
+    else:
+        if len(telefono) < 9:
+            raise ValueError("Numero debe contener 9 digitos y opcionalmente un prefijo +34")
     
 
 
@@ -243,6 +260,7 @@ def agregar_contacto(contactos:list):
     nombre = pedir_nombre()
     apellido = pedir_apellido()
     email = pedir_email(contactos)
+    telefonos = pedir_telefonos()
 
 
 
