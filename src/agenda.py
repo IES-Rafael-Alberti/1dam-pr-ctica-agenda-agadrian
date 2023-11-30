@@ -1,7 +1,7 @@
 """
-## PREGUNTAR: tengo que hacer funciones de todo lo que en las pruebas unitarias sean funcoiones disintias? ej: pedir_mail y validar_mail. en agregar contactos yo hice todo dentro en vez de pedir cada cosa en otra fucnion.
-
-## preguntar: que quiere que se ejecute primero cargar contacto, luego agregar contacto luego lo muestre. Y al final del todo muestre el menu? porque luego en el menu te pregunta si quieres cargar agenda inicial  o no
+# TODO: comprobar si al mostrar un contacto por criterio y hay dos criterios iguales, si muestra 1 o los 2 o los que hayan
+# TODO: (SI ME DA TIEMPO)comprobar si el numero al agregar contacto ya existe o no
+# TODO: crear otra funcion para impirmir en la opc 6 los contactos, (no usar la misma que ya tenia de mosrtar)
 # 
 
 27/11/2023
@@ -111,7 +111,8 @@ def agenda(contactos: list):
         elif opcion == 2:
             modificar_contacto(contactos)   
         elif opcion == 3:
-            eliminar_contacto(contactos)
+            email = input("Introduce email de contacto a eliminar: ")
+            eliminar_contacto(contactos, email)
         elif opcion == 4:
             vaciar_agenda(contactos)
         elif opcion == 5:
@@ -161,6 +162,7 @@ def pedir_apellido():
 def validar_apellido(apellido):
     if apellido.strip() == '':
         raise ValueError("Apellido incorrecto")
+
     return True
 
 
@@ -176,7 +178,7 @@ def pedir_email(contactos):
             print("Error: " + str(e))
 
 
-def validar_email(email, contactos):
+def validar_email(email, contactos): #TODO: Comprobar que el correo no existe
     if email.lower() in (correo["email"].lower() for correo in contactos):
         raise ValueError("el email ya existe en la agenda")
     
@@ -241,7 +243,7 @@ def agregar_contacto(contactos:list):
     telefonos = pedir_telefonos()
 
     contactos.append(dict([("nombre", nombre), ("apellido", apellido), ("email", email), ("telefonos", telefonos) ]))
-    #print(contactos)
+    print("Contacto añadido correctamente")
 
 #####################################
 ### FUNCIONES MODIFICAR CONTACTOS ###
@@ -249,7 +251,8 @@ def agregar_contacto(contactos:list):
 
 # TODO
 
-
+def modificar_contactos(agenda:list):
+    pass
 
 
 
@@ -273,16 +276,16 @@ def buscar_contacto(contactos:list, email):
     return None
 
 
-def eliminar_contacto(contactos: list):
+def eliminar_contacto(contactos: list, email):
     """ Elimina un contacto de la agenda a traves de un correo
     
     Args:
-        contactos: lista de contactoss
-        
+        contactos: lista de contactos
+        email: correo para identificar el contacto a borrar
     """
     try:
-        #TODO: Crear función buscar_contacto para recuperar la posición de un contacto con un email determinado
-        email = input("Introduce email de contacto a eliminar: ")
+        #TODO --: Crear función buscar_contacto para recuperar la posición de un contacto con un email determinado
+        
         pos = buscar_contacto(contactos, email)
 
         if pos != None:
@@ -351,6 +354,9 @@ def mostrar_contactos_criterio(contactos:list):
     if cont == 0:
         print(f"No hay ningun {criterio} -> {valor_criterio}")
     
+def imprimir_contacto_criterio(contactos:list, criterio, valor_criterio):
+    print(f"Contactos con el criterio '{criterio}' y valor' {valor_criterio}")
+    print("-----------------------------")
 
 
 
@@ -407,15 +413,13 @@ def mostrar_contactos(contactos: list):
         print(f"Nombre: {nombre} {apellido} ({email})\nTeléfonos: {msgTelefonos}")
         print("......")
         
-        
-
-
 
 
 def main():
-    """ Función principal del programa
+    """ 
+    Función principal del programa
     """
-    #borrar_consola()
+    borrar_consola()
 
     #TODO --: Asignar una estructura de datos vacía para trabajar con la agenda
 
@@ -442,14 +446,14 @@ def main():
 
     agregar_contacto(contactos)
 
-    #pulse_tecla_para_continuar()
-    #borrar_consola()
+    pulse_tecla_para_continuar()
+    borrar_consola()
 
     #TODO: Realizar una llamada a la función eliminar_contacto con todo lo necesario para que funcione correctamente, eliminando el contacto con el email rciruelo@gmail.com
-    #eliminar_contacto(contactos, email)
+    eliminar_contacto(contactos, "rciruelo@gmail.com")
 
-    #pulse_tecla_para_continuar()
-    #borrar_consola()
+    pulse_tecla_para_continuar()
+    borrar_consola()
 
     #TODO --: Crear función mostrar_contactos para que muestre todos los contactos de la agenda con el siguiente formato:
     # ** IMPORTANTE: debe mostrarlos ordenados según el nombre, pero no modificar la lista de contactos de la agenda original **
@@ -471,8 +475,8 @@ def main():
 
     mostrar_contactos(contactos)
 
-    #pulse_tecla_para_continuar()
-    #borrar_consola()
+    pulse_tecla_para_continuar()
+    borrar_consola()
 
     #TODO: Crear un menú para gestionar la agenda con las funciones previamente desarrolladas y las nuevas que necesitéis:
     # AGENDA
