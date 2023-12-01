@@ -1,7 +1,4 @@
 """
-# TODO: (SI ME DA TIEMPO)comprobar si el numero al agregar contacto ya existe o no
-
-
 27/11/2023
 
 Práctica del examen para realizar en casa
@@ -255,10 +252,13 @@ def validar_email(email:str, contactos:list):
    
 
 
-def pedir_telefonos() -> list:
+def pedir_telefonos(contactos:list) -> list:
     """
     Pide al usuario que introduzca opcionalmente telefono/s y llama a otra funcion para comprobar que tengan un formato correcto. Si esta correcto, lo añade a una lista.
 
+    Args:
+        contactos (list): lista contactos actual
+    
     Retorna:
         lista_telefonos: lista de los telefonos introducidos. Si no introduce nada, se devuelve vacia
     """
@@ -273,6 +273,10 @@ def pedir_telefonos() -> list:
                 return lista_telefonos
             
             if validar_telefono(telefono):
+                for contacto in contactos:
+                    for numero in contacto["telefonos"]:
+                        if telefono == numero:
+                            print("Telefono no valido, este telefono ya existe")
                 lista_telefonos.append(telefono)
             else:
                 print("Telefono no valido, debe tener 9 digitos y opcionalmente un prefijo +34")
@@ -299,6 +303,7 @@ def validar_telefono(telefono:str):
             return True
         else:
             return False
+        
     return True
 
 
@@ -321,7 +326,7 @@ def agregar_contacto(contactos:list):
         except ValueError as e:
             print("Error: " + str(e))
 
-    telefonos = pedir_telefonos()
+    telefonos = pedir_telefonos(contactos)
 
     contactos.append(dict([("nombre", nombre), ("apellido", apellido), ("email", email), ("telefonos", telefonos) ]))
     print("Contacto añadido correctamente")
@@ -362,7 +367,7 @@ def introducir_nuevos_datos(contactos:list, pos:int):
     nombre = pedir_nombre()
     apellido = pedir_apellido()
     email = pedir_email(contactos)
-    telefonos = pedir_telefonos()
+    telefonos = pedir_telefonos(contactos)
 
     contactos[pos] = dict([ ("nombre", nombre), ("apellido", apellido), ("email", email), ("telefonos", telefonos) ])
 
@@ -475,7 +480,7 @@ def contactos_criterio(contactos:list):
                     imprimir_contacto_criterio([contactos[contacto]], criterio, valor_criterio, cont)
                     cont +=1
         else: 
-            if contactos[contacto][criterio] == valor_criterio.lower():
+            if contactos[contacto][criterio].lower() == valor_criterio.lower().strip():
                 imprimir_contacto_criterio([contactos[contacto]], criterio, valor_criterio, cont)
                 cont+=1
     if cont == 0:
@@ -507,7 +512,7 @@ def imprimir_contacto_criterio(contactos:list, criterio:str, valor_criterio:str,
 
     #Si tiene, formateamos el telefono en caso necesario, y comprobamos si tiene 1 o mas
     else:
-        contacto["telefonos"] = list(formatearTelefono(telefono) for telefono in telefonos) 
+        contacto["telefonos"] = list(formatear_telefono(telefono) for telefono in telefonos) 
         
         if len(telefonos) > 1:
             msgTelefonos =  " / ".join(map(str, contacto["telefonos"]))
@@ -521,7 +526,7 @@ def imprimir_contacto_criterio(contactos:list, criterio:str, valor_criterio:str,
 ### FUNCIONES MOSTRAR LISTA CONTACTOS ###
 #########################################
 
-def formatearTelefono(telefono:str):
+def formatear_telefono(telefono:str):
     """
     Comrpueba si el telefono tiene prefijo y le añade un guion para separar el prefijo y el numero
 
@@ -559,7 +564,7 @@ def mostrar_contactos(contactos: list):
 
         #Si tiene, formateamos el telefono en caso necesario, y comprobamos si tiene 1 o mas
         else:
-            contacto["telefonos"] = list(formatearTelefono(telefono) for telefono in telefonos) 
+            contacto["telefonos"] = list(formatear_telefono(telefono) for telefono in telefonos) 
             
             if len(telefonos) > 1:
                 msgTelefonos =  " / ".join(map(str, contacto["telefonos"]))

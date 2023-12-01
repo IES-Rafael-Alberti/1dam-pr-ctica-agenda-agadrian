@@ -10,6 +10,8 @@ from src.agenda import(
     validar_telefono,
     buscar_contacto,
     pedir_opcion,
+    formatear_telefono,
+    vaciar_agenda
 )
 
 
@@ -75,6 +77,31 @@ def test_pedir_email(monkeypatch, contactos_iniciales):
 )
 def test_validar_telefono(input_tel, expected):
     assert validar_telefono(input_tel) == expected
+
+
+@pytest.mark.parametrize(
+    "telefono, expected",
+    [
+        ("+34666666666", "+34-666666666"),
+        ("123456789" ,"123456789"),
+    ]
+)
+def test_formatear_telefono(telefono, expected):
+    assert formatear_telefono(telefono) == expected
+
+
+
+@pytest.mark.parametrize(
+    "contactos, expected",
+    [
+        ([{"nombre": "Laura", "apellido": "Iglesias", "email": "liglesias@gmail.com", "telefonos": ["666777333", "666888555", "607889988"]},
+        {"nombre": "Antonio", "apellido": "Amargo", "email": "aamargo@gmail.com", "telefonos": []},
+        {"nombre": "Marta", "apellido": "Copete", "email": "marcopete@gmail.com", "telefonos": ["+34600888800"]}], None)
+    ]
+)
+def test_vaciar_agenda(contactos, expected):
+    assert vaciar_agenda(contactos) == expected
+
 
 
 @pytest.mark.parametrize(
