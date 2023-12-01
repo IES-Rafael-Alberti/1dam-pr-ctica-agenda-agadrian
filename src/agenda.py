@@ -174,15 +174,10 @@ def validar_apellido(apellido):
 
 
 def pedir_email(contactos):
-    email_ok = False
-    while not email_ok:
-        try:
-            email = input("Email: ").strip()
-            validar_email(email, contactos)
-            return email
-        except ValueError as e:
-            print("Error: " + str(e))
-            continue
+    email = input("Email: ").strip()
+    if validar_email(email, contactos):
+        return email
+        
 
 
 def validar_email(email, contactos): 
@@ -198,6 +193,7 @@ def validar_email(email, contactos):
     if " " in email:
         raise ValueError("el email no puede tener espacios")
 
+    return True
    
 
 
@@ -214,6 +210,8 @@ def pedir_telefonos() -> list:
             
             if validar_telefono(telefono):
                 lista_telefonos.append(telefono)
+            else:
+                print("Telefono no valido, debe tener 9 digitos y opcionalmente un prefijo +34")
         except ValueError as e:
             print("Error: " + str(e))
 
@@ -222,18 +220,15 @@ def validar_telefono(telefono):
     """
     
     """
-    if (len(telefono) == 9 and not telefono.isdigit()) or (telefono[:3] == "+34" and not telefono[3:12].isdigit()):
-        raise ValueError("Debes introducir caracteres numericos")
-    
+    if (len(telefono) < 9) or (len(telefono) == 9 and not telefono.isdigit()) or (telefono[:3] == "+34" and not telefono[3:12].isdigit()):
+        #raise ValueError("Debes introducir caracteres numericos")
+        return False
     if len(telefono) > 9:
         if telefono[-12:-9] == "+34":
             return True
         else:
-            raise ValueError("Numero debe contener 9 digitos y opcionalmente un prefijo +34")
-    else:
-        if len(telefono) < 9:
-            raise ValueError("Numero debe contener 9 digitos y opcionalmente un prefijo +34")
-    
+            #raise ValueError("Numero debe contener 9 digitos y opcionalmente un prefijo +34")
+            return False
     return True
 
 
@@ -249,7 +244,14 @@ def agregar_contacto(contactos:list):
     print("Datos a introducir\n-----------------")
     nombre = pedir_nombre()
     apellido = pedir_apellido()
-    email = pedir_email(contactos)
+
+    email = None
+    while not email:
+        try:
+            email = pedir_email(contactos)
+        except ValueError as e:
+            print("Error: " + str(e))
+
     telefonos = pedir_telefonos()
 
     contactos.append(dict([("nombre", nombre), ("apellido", apellido), ("email", email), ("telefonos", telefonos) ]))
