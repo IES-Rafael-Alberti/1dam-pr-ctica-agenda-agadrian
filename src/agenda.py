@@ -1,8 +1,6 @@
 """
-# TODO: comprobar si al mostrar un contacto por criterio y hay dos criterios iguales, si muestra 1 o los 2 o los que hayan
 # TODO: (SI ME DA TIEMPO)comprobar si el numero al agregar contacto ya existe o no
-# TODO: crear otra funcion para impirmir en la opc 6 los contactos, (no usar la misma que ya tenia de mosrtar)
-# 
+# TODO: (SI MEDA TIEMPO) que al mostrar contacto por criterio si elije numero, mostrarlo si lo introduce con el +34 o no, mostrarlo igualemnte
 
 27/11/2023
 
@@ -62,7 +60,7 @@ def mostrar_menu():
     """ 
     Muestra las opciones del menu disponibles para elejir
     """
-    print("AGENDA")
+    print("\nAGENDA")
     print("-" * len("AGENDA"))
     print("1. Nuevo contacto")
     print("2. Modificar contacto")
@@ -109,7 +107,8 @@ def agenda(contactos: list):
         if opcion == 1:
             agregar_contacto(contactos)
         elif opcion == 2:
-            modificar_contacto(contactos)   
+            email = input("Introduce email de contacto a modificar: ")
+            modificar_contacto(contactos, email)   
         elif opcion == 3:
             email = input("Introduce email de contacto a eliminar: ")
             eliminar_contacto(contactos, email)
@@ -128,23 +127,32 @@ def agenda(contactos: list):
 ### FUNCIONES AGREGAR CONTACTOS ###
 ###################################
 
-# TODO: controlar la introduccion de espacios en medio de un nombre compuesot, o del mail o apellido. Usar quizas el .split() y luego unir de nuevo las palabras de la lista creada por split
+def formatear_espacios(cadena):
+    
+    palabras = cadena.split(" ")
+    cadena_sin_espacio = list((palabra for palabra in palabras if palabra != "" ))
+    cadena_nueva = " ".join(cadena_sin_espacio)
+
+    return cadena_nueva
+
+
 
 def pedir_nombre():
     nombre_ok = False
     while not nombre_ok:
         try:
-            nombre = input("Nombre: ").title()
+            nombre = input("Nombre: ").title().strip()
             validar_nombre(nombre)
+            if " " in nombre:
+                nombre = formatear_espacios(nombre)
             return nombre
         except ValueError as e:
             print("Error " + str(e))
 
 
 def validar_nombre(nombre):
-    if nombre.strip() == '':
+    if nombre == '':
         raise ValueError("Nombre incorrecto")
-    return True
 
 
 
@@ -152,7 +160,7 @@ def pedir_apellido():
     apelllido_ok = False
     while not apelllido_ok:
         try:
-            apellido = input("Apellido: ").title()
+            apellido = input("Apellido: ").title().strip()
             validar_apellido(apellido)
             return apellido
         except ValueError as e:
@@ -160,10 +168,8 @@ def pedir_apellido():
 
 
 def validar_apellido(apellido):
-    if apellido.strip() == '':
+    if apellido == '':
         raise ValueError("Apellido incorrecto")
-
-    return True
 
 
 
@@ -176,9 +182,10 @@ def pedir_email(contactos):
             return email
         except ValueError as e:
             print("Error: " + str(e))
+            continue
 
 
-def validar_email(email, contactos): #TODO: Comprobar que el correo no existe
+def validar_email(email, contactos): 
     if email.lower() in (correo["email"].lower() for correo in contactos):
         raise ValueError("el email ya existe en la agenda")
     
@@ -188,7 +195,10 @@ def validar_email(email, contactos): #TODO: Comprobar que el correo no existe
     if "@" not in email:
         raise ValueError("el email no es un correo válido")
     
-    return True
+    if " " in email:
+        raise ValueError("el email no puede tener espacios")
+
+   
 
 
 def pedir_telefonos() -> list:
@@ -202,13 +212,13 @@ def pedir_telefonos() -> list:
                 telefono_ok = True
                 return lista_telefonos
             
-            if validar_telefonos(telefono):
+            if validar_telefono(telefono):
                 lista_telefonos.append(telefono)
         except ValueError as e:
             print("Error: " + str(e))
 
 
-def validar_telefonos(telefono):
+def validar_telefono(telefono):
     """
     
     """
@@ -249,12 +259,27 @@ def agregar_contacto(contactos:list):
 ### FUNCIONES MODIFICAR CONTACTOS ###
 #####################################
 
-# TODO
+def modificar_contacto(contactos:list, email):
+    try:
+        pos = buscar_contacto(contactos, email)
+        if pos != None:
+            print("Introduce nuevos datos para el contacto ")
+            introducir_nuevos_datos(contactos, pos)
+            print("Se modificó 1 contacto")
+        else:
+            print("No se encontró el contacto para modificar")
+    except Exception as e:
+            print(f"**Error** {e}")
+            print("No se eliminó ningún contacto")
 
-def modificar_contactos(agenda:list):
-    pass
 
+def introducir_nuevos_datos(contactos, pos):
+    nombre = pedir_nombre()
+    apellido = pedir_apellido()
+    email = pedir_email(contactos)
+    telefonos = pedir_telefonos()
 
+    contactos[pos] = dict([ ("nombre", nombre), ("apellido", apellido), ("email", email), ("telefonos", telefonos) ])
 
 
 ####################################
@@ -284,8 +309,6 @@ def eliminar_contacto(contactos: list, email):
         email: correo para identificar el contacto a borrar
     """
     try:
-        #TODO --: Crear función buscar_contacto para recuperar la posición de un contacto con un email determinado
-        
         pos = buscar_contacto(contactos, email)
 
         if pos != None:
@@ -323,9 +346,8 @@ def cargar_contactos(contactos: list):
 
     with open(RUTA_FICHERO, 'r') as fichero:
         for linea in fichero:
-            datos = linea.split(";")
-            # Quitamos el /n del ultimo dato
-            datos[-1] = datos[-1][:-1]  
+            # .strip() para eliminar espacios y que no aparezca /n
+            datos = linea.strip().split(";")
             contactos.append(dict([ ("nombre", datos[0]), ("apellido", datos[1]), ("email", datos[2]), ("telefonos", datos[3:]) ]))
 
 
@@ -335,29 +357,52 @@ def cargar_contactos(contactos: list):
 
 def mostrar_contactos_criterio(contactos:list):
     """
-    También deberás desarrollar la opción 6 que deberá preguntar por el criterio de búsqueda (nombre, apellido, email o telefono) y el valor a buscar para mostrar los contactos que encuentre en la agenda.
+    Muestra todos los datos de el contacto deseado, segun el criterio elegido
     """
     criterio = input("Mediante que criterio de busqueda quieres idetificar al contacto (nombre,apellido,email,telefono): ").lower().strip().replace(" ", "")
 
     while criterio not in {"nombre", "apellido", "email", "telefono"}:
-        print("Debe elejir un criterio correcto (nombre,apellido,email,telefono): ")
-        criterio = input().lower().strip().replace(" ", "")
-    
-    valor_criterio = input(f"Introduce {criterio}: ")
-    
-    # TODO: arreglar cuando elije criterio telefono, ya que contiene una lista
+        criterio = input("Debe elejir un criterio correcto (nombre,apellido,email,telefono): ").lower().strip().replace(" ", "")
+
+    valor_criterio = input(f"Introduce {criterio}: ").title()
     cont = 0
     for contacto in range(len(contactos)):
-        if contactos[contacto][criterio] == valor_criterio:
-            mostrar_contactos([contactos[contacto]])
-            cont+=1
+        if criterio == "telefono":
+            for numero in contactos[contacto]["telefonos"]:
+                if numero == valor_criterio.lower():
+                    imprimir_contacto_criterio([contactos[contacto]], criterio, valor_criterio, cont)
+                    cont +=1
+        else: 
+            if contactos[contacto][criterio] == valor_criterio.lower():
+                imprimir_contacto_criterio([contactos[contacto]], criterio, valor_criterio, cont)
+                cont+=1
     if cont == 0:
         print(f"No hay ningun {criterio} -> {valor_criterio}")
-    
-def imprimir_contacto_criterio(contactos:list, criterio, valor_criterio):
-    print(f"Contactos con el criterio '{criterio}' y valor' {valor_criterio}")
-    print("-----------------------------")
 
+
+
+def imprimir_contacto_criterio(contactos:list, criterio, valor_criterio, cont):
+    if cont == 0 :
+        print(f"Contactos con el criterio '{criterio}' y valor '{valor_criterio}'")
+    print("---------------------------------------------")
+    for contacto in contactos:
+        nombre = contacto["nombre"]
+        apellido = contacto["apellido"]
+        email = contacto["email"]
+        telefonos = contacto["telefonos"]
+    # Comprobamos si tiene telefono, si no tiene le damos el valor "ninguno"
+    if not telefonos:
+        msgTelefonos = "Ninguno"
+
+    #Si tiene, formateamos el telefono en caso necesario, y comprobamos si tiene 1 o mas
+    else:
+        contacto["telefonos"] = list(formatearTelefono(telefono) for telefono in telefonos) 
+        
+        if len(telefonos) > 1:
+            msgTelefonos =  " / ".join(map(str, contacto["telefonos"]))
+        else:
+            msgTelefonos = contacto["telefonos"][0]
+    print(f"Nombre: {nombre} {apellido} ({email})\nTeléfonos: {msgTelefonos}")
 
 
 
@@ -429,6 +474,7 @@ def main():
     #TODO --: Realizar una llamada a la función cargar_contacto con todo lo necesario para que funcione correctamente.
 
     cargar_contactos(contactos)
+    print(contactos)
     
     
 
