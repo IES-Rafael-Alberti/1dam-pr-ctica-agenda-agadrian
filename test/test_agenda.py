@@ -99,3 +99,6 @@ def test_pedir_opcion(monkeypatch):
     monkeypatch.setattr('builtins.input', lambda _: "a")
     resultado = pedir_opcion()
     assert resultado == -1
+    monkeypatch.setattr('builtins.input', lambda _: "15")
+    resultado = pedir_opcion()
+    assert resultado == -1

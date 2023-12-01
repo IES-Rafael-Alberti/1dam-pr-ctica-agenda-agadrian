@@ -109,7 +109,7 @@ def validar_email(email, contactos):
         raise ValueError("el email no puede tener espacios")
 
     return True
-   
+   #
 
 
 def pedir_telefonos() -> list:
